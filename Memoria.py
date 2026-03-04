@@ -2,13 +2,14 @@ import typing
 import types
 
 class Skill:
-    def __init__(self, Name : str, Cost: int, Active: bool, target: str, Hits: int, length: int):
+    def __init__(self, Name : str, Cost: int, Active: bool, target: str, Hits: int, debuffs:bool, length: int):
         self.skillname = Name
         self.spcost = Cost
         self.isactive = Active
         self.target = target
         self.hits = Hits
         self.length = length
+        self.debuffs = debuffs
     
     def print(self):
         print(self.skillname)
@@ -34,21 +35,12 @@ class Memoria:
     def print(self):
         print(self.name)
 
-class multihitboost(Skill):
-    def __init__(self, Name, Cost, Active, target, Hits, length, multihitboost: int):
-        super().__init__(Name, Cost, Active, target, Hits, length)
-        self.multihitboost = multihitboost
-
 class attack(Skill):
-    def __init__(self, Name, Cost, target, Hits):
-        super().__init__(Name, Cost, target, Hits)
-
-class spboostskill(Skill):
-    def __init__(self, Name, Cost, Active, target, length):
-        super().__init__(Name, Cost, Active, target, length)
+    def __init__(self, Name, Cost, target, debuffs, Hits):
+        super().__init__(Name, Cost, target, debuffs, Hits)
 
 class limitedskill(Skill):
-    def __init__(self, Name, Cost, Active, target, Hits, length, Uses:int):
-        super().__init__(Name, Cost, Active, target, Hits, length)
+    def __init__(self, Name, Cost, Active, target, Hits, debuffs, length, Uses:int):
+        super().__init__(Name, Cost, Active, target, Hits, debuffs, length)
         self.uselimit = Uses
 
