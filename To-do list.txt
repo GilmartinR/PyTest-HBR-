@@ -1,29 +1,29 @@
-Possible implementation of turn save:
-At turn start:
-Choose a unit to adjust their move:
+Units to be implemented
 1. Ruka - 13SP - Current Move: Basic Attack
 2. Maid Aoi - 10SP - Current Move: Basic Attack
-3. Yingxia Thunder
-
+3. Megumi (for field implementation)
+4. Tama (for single-use buff implementation)
+5. yunyun - for multihit comparison in active buffs
+6. Charl - weakness implant, damage formulas
 
 Ideas:
 1. Implement turn choice and "action confirm" button thingy - DONE (90%)
-1.1 - implement skill usage amounts - DONE
-2. Implement enemies (ST for now)
-3. Implement Attacks
-4. Implement OD Gauge
+    - implement skill usage amounts - DONE
+2. Implement enemies (ST for now) 
+    - create target enemy, give it "basic" amount of health
+3. Implement Attacks 
+    - might have to create a damage formula/yoink from TojoFiles
+4. Implement OD Gauge 
+    - hit counter, account for Multihit, 40 hits per 1 gauge, idk how to implement button for OD 
 5. Implement Buffs being used
+    - check for buffs when attacking / using specific buff skills, maybe add multipliers in formulas?
+    buffs will need actual numbers behind them to back up stuff
 6. Implement Multihit and make it count towards OD Gauge
+    - see 4
 7. Implement Buff priority, stacking and disabling when not chosen as current buff
+    - check multipliers ig, if they're implemented take same "type" buffs (might need a class for buffs atp lmao)
 8. Implement Frontline, backline (sp regen differences, switching out unit, skills targeting frontline/backline)
+    - FL / BL can be done via swapping chars, if fl->bl then delete all skills of whoever is fl-> and
+    add basic attack as skill usage on bl->fl unit
 9. Implement switching positions in frontline - DONE (needs testing)
-
-Print current list with sp and everything
--> make choice of unit
-Print all skills, sp, same as was before
--> choose skill
--> check sp, choose target
--> clear choice table for that unit, add back in the chosen skill and it's target
--> back to selection screen?
-
-remember you dont need to print straight away, you can concate strings to print
+    - frontline swapping is done, can be expanded for previous point

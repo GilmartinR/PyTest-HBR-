@@ -41,6 +41,7 @@ action_selection = defaultdict(dict)
 debuffs_on_enemy = {}
 activeskills = []
 for i in range(10): ##10 rounds of simulated moves
+    print("-------------------------------------------------------------------\n")
     print("Round : " + str(i+1))
 
     #Countdown Active Skills and Buffs within said Skills
@@ -142,11 +143,6 @@ for i in range(10): ##10 rounds of simulated moves
                         except:
                             pass
                         if (unit.sp >= skill.spcost) and (skilllim_pass == True):
-                            try:
-                                if skill.uselimit > 0:
-                                    skill.uselimit -=1                               
-                            except:
-                                pass
                             checksp = False
                             copyact = action_selection[unit].copy()
                             for x in copyact:
@@ -193,6 +189,11 @@ for i in range(10): ##10 rounds of simulated moves
     for unit in allies:
         args = []
         for skill in action_selection[unit]:
+            try:
+                if skill.uselimit > 0:
+                    skill.uselimit -=1                               
+            except:
+                pass
             match skill.target:
                 case "self":
                     args.append(unit)
