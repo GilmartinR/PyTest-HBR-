@@ -4,21 +4,22 @@ from collections import defaultdict
 
 
 basic = mm.Skill("Basic Attack", 0,0,"enemy",2,False, 1)
-orbSPregen = mm.limitedskill("Skillful Means",1,False,"self",0,False, 0,1)
+orbSPregenAoi = mm.limitedskill("Skillful Means",1,False,"self",0,False, 0,1)
+orbSPregenRuka = mm.limitedskill("Skillful Means",1,False,"self",0,False, 0,1)
 ## Diva Ruka Implementation
 ruka5 = mm.Memoria("Diva Ruka", LB=1)
 ruka5s21 = mm.Skill("Luna", 7, True, "Single Ally", 0, False, 3)
 ruka5s22 = mm.Skill("Luna EX", 7, True, "Single Ally", 0, False, 3)
 ruka5ex = mm.limitedskill("Song To Shooting Stars", 14,True,"All Allies",0,False,5,4)
 ruka5.equipmentSP = 3
-ruka5.skills = [basic, ruka5s21, ruka5s22, ruka5ex,orbSPregen]
+ruka5.skills = [basic, ruka5s21, ruka5s22, ruka5ex,orbSPregenRuka]
 
 ## Thunder Aoi Implementation
 aoi2 = mm.Memoria("Maid Aoi", LB=1)
 aoi1ex = mm.limitedskill("Angels Wings", 10, False, "self", 0, True, 3, 4)
 aoi2ex = mm.limitedskill("Big PP Thunder Damage", 13, False,"enemy",3,False, 0, 4)
 
-aoi2.skills = [basic,aoi1ex,aoi2ex,orbSPregen]
+aoi2.skills = [basic,aoi1ex,aoi2ex,orbSPregenAoi]
 aoi2.equipmentSP = 3
 
 ## 
@@ -99,9 +100,14 @@ for i in range(10): ##10 rounds of simulated moves
             print("Current unit actions:")
             for unit in allies:
                 for skill_choice in action_selection[unit]:
-                    print(str(allies.index(unit) + 1)+". " + unit.name + " ("+str(unit.sp)+" SP) - " + skill_choice.skillname)
-            print(str(len(allies)+1) + ". Confirm choices")
-            choice = input("Select a character to take action or confirm choice: ")
+                    try:
+                        skill_uses = " : " + str(skill_choice.uselimit) + " uses left"
+                    except:
+                        skill_uses = ""
+                    print(str(allies.index(unit) + 1)+". " + unit.name + " ("+str(unit.sp)+" SP) - " + skill_choice.skillname + skill_uses)
+            print(str(len(allies)+1) + ". Swap Characters")
+            print(str(len(allies)+2) + ". Confirm choices")
+            choice = input("Select a character to take action, swap characters or confirm choice: ")
             print("")
             choice = int(choice) - 1
             if (choice > len(allies)) or (choice < 0):
@@ -114,7 +120,11 @@ for i in range(10): ##10 rounds of simulated moves
                 print("Available skills on " + unit.name + ": ")
                 print("0. Check Current Buffs")
                 for skills in unit.skills:
-                    print(str(unit.skills.index(skills) + 1)+'. ' + skills.skillname + " - " + str(skills.spcost) + " SP")
+                    try:
+                        skill_uses = " : " + str(skills.uselimit) + " uses left"
+                    except:
+                        skill_uses = ""
+                    print(str(unit.skills.index(skills) + 1)+'. ' + skills.skillname + " - " + str(skills.spcost) + " SP" + skill_uses)
                 while checksp:
                     skillchoice = input("Choose which skill to use: ")
                     skillchoice = int(skillchoice)
@@ -125,7 +135,18 @@ for i in range(10): ##10 rounds of simulated moves
                         print("------------------------------------")
                     elif skillchoice <= len(unit.skills):
                         skill = unit.skills[skillchoice-1]
-                        if unit.sp >= skill.spcost:
+                        skilllim_pass = True
+                        try:
+                            if skill.uselimit == 0:
+                                skilllim_pass = False                                
+                        except:
+                            pass
+                        if (unit.sp >= skill.spcost) and (skilllim_pass == True):
+                            try:
+                                if skill.uselimit > 0:
+                                    skill.uselimit -=1                               
+                            except:
+                                pass
                             checksp = False
                             copyact = action_selection[unit].copy()
                             for x in copyact:
@@ -149,12 +170,23 @@ for i in range(10): ##10 rounds of simulated moves
                                     action_selection[unit][skill] = "enemy"
                             valid_input = True
                         else:
-                            print("Not enough SP: use a different skill")
+                            print("Not enough SP or uses remaining: use a different skill")
                     else:
                         print("Please make a valid selection")
                 print("")
             if choice == len(allies):
-                #print("HIHELLO")
+                print("Please choose an ally")
+                for x in allies:
+                    print(str(allies.index(x)+1) + ". " + x.name)
+                x = input("Write number of selected ally: ")
+                x = int(x)-1
+                targetchoice = input("Write number of selected ally to swap unit with: ")
+                targetchoice = int(targetchoice)-1
+                target_ally = allies[targetchoice]
+                unit = allies[x]
+                allies[x], allies[targetchoice] = target_ally, unit
+                print("")
+            if choice == (len(allies) + 1):
                 choice_made = True
 
 

@@ -8,7 +8,7 @@ Choose a unit to adjust their move:
 
 Ideas:
 1. Implement turn choice and "action confirm" button thingy - DONE (90%)
-1.1 - implement skill usage amounts
+1.1 - implement skill usage amounts - DONE
 2. Implement enemies (ST for now)
 3. Implement Attacks
 4. Implement OD Gauge
@@ -16,7 +16,7 @@ Ideas:
 6. Implement Multihit and make it count towards OD Gauge
 7. Implement Buff priority, stacking and disabling when not chosen as current buff
 8. Implement Frontline, backline (sp regen differences, switching out unit, skills targeting frontline/backline)
-9. Implement switching positions in frontline
+9. Implement switching positions in frontline - DONE (needs testing)
 
 Print current list with sp and everything
 -> make choice of unit
