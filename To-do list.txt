@@ -1,0 +1,29 @@
+Possible implementation of turn save:
+At turn start:
+Choose a unit to adjust their move:
+1. Ruka - 13SP - Current Move: Basic Attack
+2. Maid Aoi - 10SP - Current Move: Basic Attack
+3. Yingxia Thunder
+
+
+Ideas:
+1. Implement turn choice and "action confirm" button thingy - DONE (90%)
+1.1 - implement skill usage amounts
+2. Implement enemies (ST for now)
+3. Implement Attacks
+4. Implement OD Gauge
+5. Implement Buffs being used
+6. Implement Multihit and make it count towards OD Gauge
+7. Implement Buff priority, stacking and disabling when not chosen as current buff
+8. Implement Frontline, backline (sp regen differences, switching out unit, skills targeting frontline/backline)
+9. Implement switching positions in frontline
+
+Print current list with sp and everything
+-> make choice of unit
+Print all skills, sp, same as was before
+-> choose skill
+-> check sp, choose target
+-> clear choice table for that unit, add back in the chosen skill and it's target
+-> back to selection screen?
+
+remember you dont need to print straight away, you can concate strings to print

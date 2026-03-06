@@ -44,3 +44,11 @@ class limitedskill(Skill):
         super().__init__(Name, Cost, Active, target, Hits, debuffs, length)
         self.uselimit = Uses
 
+class Enemy:
+    def __init__(self, Name: str, debuffs: list, DP: int, HP: int):
+        self.name = Name
+        self.debuffs = debuffs
+        self.dp = DP
+        self.hp = HP
+        self.skills = []
+        self.skills_pattern = []

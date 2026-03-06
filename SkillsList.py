@@ -56,3 +56,5 @@ def luna(*args):
         #Enable mode
         target.buffs["Luna (Non EX)"] = "3 turns"
 
+def basic_attack(*args):
+    print("Did a Basic Attack!")
