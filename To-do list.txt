@@ -1,14 +1,12 @@
 Units to be implemented
-1. Ruka - 13SP - Current Move: Basic Attack
-2. Maid Aoi - 10SP - Current Move: Basic Attack
-3. Megumi (for field implementation)
+1. Ruka - 13SP - Current Move: Basic Attack - need to implement LunaEX
+2. Maid Aoi - 10SP - Current Move: Basic Attack - DONE
+3. Megumi (for field implementation, as well as passive skill)
 4. Tama (for single-use buff implementation)
 5. yunyun - for multihit comparison in active buffs
 6. Charl - weakness implant, damage formulas
 
 Ideas:
-1. Implement turn choice and "action confirm" button thingy - DONE (90%)
-    - implement skill usage amounts - DONE
 2. Implement enemies (ST for now) 
     - create target enemy, give it "basic" amount of health
 3. Implement Attacks 
@@ -17,7 +15,7 @@ Ideas:
     - hit counter, account for Multihit, 40 hits per 1 gauge, idk how to implement button for OD 
 5. Implement Buffs being used
     - check for buffs when attacking / using specific buff skills, maybe add multipliers in formulas?
-    buffs will need actual numbers behind them to back up stuff
+    
 6. Implement Multihit and make it count towards OD Gauge
     - see 4
 7. Implement Buff priority, stacking and disabling when not chosen as current buff
@@ -52,15 +50,5 @@ subclass def_down
 -when calculating multiplier - run through all debuffs on enemy, 
 - will need a func to find strongest current buffs?
 - func for strongest active debuffs?
+
 subclass stat_down
-
-probably need to redo buffs/debuffs?
-
-class buffs:
-	def __init__(self, name, active, length)
-
-class skill_atk_increase(buffs):
-	def __init__ (self, name, active, length, )
-
-if i refactor buffs to have active durations of their own as a property
-then maybe i can stop the "active skills" bullshit on 
