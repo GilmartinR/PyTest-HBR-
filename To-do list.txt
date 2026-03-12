@@ -27,3 +27,40 @@ Ideas:
     add basic attack as skill usage on bl->fl unit
 9. Implement switching positions in frontline - DONE (needs testing)
     - frontline swapping is done, can be expanded for previous point
+10. Implement Elements, weakness, resistances, damage increases based on said numbers
+11. Implement memoria/unit stats (bruuuuuuuuuuuuuuuuuuuuuuuuuuuuhhhhhhhhhhhhhhhhhhhh)
+12. Implement GUI - lmao
+13. Implement passive abilities based on character?
+
+----------------------------------------------------------------------------------------------------
+
+Skill Atk increase - Skill atk up + elemental skill atk up + field + tac vision
+critical - crit rate + crit dmg + elemental crit dmg
+multihit - multihit
+def decrease - def decrease + elemental def + def (perma) + elemental def (perma) + expose
+
+how to implement different types of debuffs, how to implement perma def down?
+
+class buffs
+
+subclass skill_atk_increase
+subclass critical
+subclass multihit 
+
+class debuffs
+subclass def_down
+-when calculating multiplier - run through all debuffs on enemy, 
+- will need a func to find strongest current buffs?
+- func for strongest active debuffs?
+subclass stat_down
+
+probably need to redo buffs/debuffs?
+
+class buffs:
+	def __init__(self, name, active, length)
+
+class skill_atk_increase(buffs):
+	def __init__ (self, name, active, length, )
+
+if i refactor buffs to have active durations of their own as a property
+then maybe i can stop the "active skills" bullshit on 

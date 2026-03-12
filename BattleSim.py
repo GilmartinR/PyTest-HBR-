@@ -35,8 +35,6 @@ for x in allies:
         x.spregenfl += 1
 
 #List of all active skills, ative debuffs on enemies, and their durations
-actskls_duration = {}
-active_single_skills = defaultdict(dict)
 action_selection = defaultdict(dict)
 debuffs_on_enemy = {}
 activeskills = []
@@ -45,47 +43,16 @@ for i in range(10): ##10 rounds of simulated moves
     print("Round : " + str(i+1))
 
     #Countdown Active Skills and Buffs within said Skills
-    for skills in actskls_duration:
-        actskls_duration[skills] -= 1
-    for ally in allies:
-        copy = active_single_skills[ally].copy()
-        for skill in copy:
-            args = []
-            args.append(ally)
-            args.append(skill)
-            args.append(0)
-            args.append(active_single_skills)
-            args = tuple(args)
-            skillnamesearch = str.lower(skill.skillname).replace(' ','_')
-            try:
-                skilleffect = getattr(slist, skillnamesearch)
-                skilleffect(*args)
-            except:
-                print("Skill has not been implemented yet")
     for skill in activeskills:
-        args = []
-        match skill.target:
-            case "self":
-                args.append(unit)
-            case "All Allies":
-                args.append(allies)
-        if skill.debuffs:
-            args.append(debuffs_on_enemy)
-        if skill.isactive:
-            args.append(actskls_duration[skill.skillname])
-        #print(args)
-        args = tuple(args)
-        skillnamesearch = str.lower(skill.skillname).replace(' ','_')
-        try:
-            skilleffect = getattr(slist, skillnamesearch)
-            skilleffect(*args)
-        except:
-            print("Skill has not been implemented yet")
-        if actskls_duration[skill.skillname] == 0:
-            del actskls_duration[skill.skillname]
+        skill.length -= 1
+        if skill.length == 0:
             activeskills.remove(skill)
-
-    # Choose ally to take action
+    for ally in allies:
+        for buff in ally.buffs_upd:
+            if buff.isActive:
+                buff.length -= 1
+            if buff.length == 0:
+                ally.buffs_upd.remove(buff)
     choice_made = False
     
     for unit in allies:
@@ -96,6 +63,7 @@ for i in range(10): ##10 rounds of simulated moves
         unit.sp = unit.sp + unit.spregenfl
         if unit.sp > 20:
             unit.sp = 20
+
     valid_input = False
     while not choice_made:
             print("Current unit actions:")
@@ -129,12 +97,14 @@ for i in range(10): ##10 rounds of simulated moves
                 while checksp:
                     skillchoice = input("Choose which skill to use: ")
                     skillchoice = int(skillchoice)
-                    if skillchoice == 0:
+                    
+                    if skillchoice == 0: ## Print Unit Buffs
                         print("-------- Buffs on " + unit.name + " ------")
-                        for x in unit.buffs:
-                            print(x + " : " + unit.buffs[x])
+                        for buff in unit.buffs_upd:
+                            buff.print()
                         print("------------------------------------")
-                    elif skillchoice <= len(unit.skills):
+
+                    elif skillchoice <= len(unit.skills): ## Attempt to select skill
                         skill = unit.skills[skillchoice-1]
                         skilllim_pass = True
                         try:
@@ -170,7 +140,8 @@ for i in range(10): ##10 rounds of simulated moves
                     else:
                         print("Please make a valid selection")
                 print("")
-            if choice == len(allies):
+
+            if choice == len(allies): ## Choose to swap allies
                 print("Please choose an ally")
                 for x in allies:
                     print(str(allies.index(x)+1) + ". " + x.name)
@@ -182,9 +153,11 @@ for i in range(10): ##10 rounds of simulated moves
                 unit = allies[x]
                 allies[x], allies[targetchoice] = target_ally, unit
                 print("")
-            if choice == (len(allies) + 1):
+            
+            if choice == (len(allies) + 1): ## Confirm Choices
                 choice_made = True
 
+    ## ACTIVATING SKILLS
 
     for unit in allies:
         args = []
@@ -201,24 +174,10 @@ for i in range(10): ##10 rounds of simulated moves
                     args.append(allies)
                 case "Single Ally":
                     args.append(action_selection[unit][skill])
+                case "Field":
+                    args.append[activeskills]
             if skill.debuffs:
                 args.append(debuffs_on_enemy)
-            if skill.isactive:
-                match skill.target:
-                    case "self":
-                        args.append(skill)
-                        args.append(1)
-                        active_single_skills[unit][skill] = 1
-                        args.append(active_single_skills)
-                    case "All Allies":
-                        actskls_duration[skill.skillname] = skill.length
-                        activeskills.append(skill)
-                    case "Single Ally":
-                        args.append(skill)
-                        args.append(1)
-                        active_single_skills[target_ally][skill] = 1
-                        args.append(active_single_skills)
-                args.append(skill.length)
             #print(args)
             args = tuple(args)
             skillnamesearch = str.lower(skill.skillname).replace(' ','_')
