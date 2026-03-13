@@ -1,154 +1,37 @@
-import typing
-import types
+import Classes as mm
+import SkillsList as slist
+import PassiveSkills as plist
 
-class Skill:
-    def __init__(self, Name : str, Cost: int, Active: bool, target: str, Hits: int, debuffs:bool, length: int):
-        self.skillname = Name
-        self.spcost = Cost
-        self.isactive = Active
-        self.target = target
-        self.hits = Hits
-        self.length = length
-        self.debuffs = debuffs
-    
-    def print(self):
-        print(self.skillname)
 
-    def effect(self):
-        print("There is no effect at the moment")
 
-class Memoria:
-    def __init__(self, Name: str, LB: int):
-        self.name = Name
-        self.limitbreak = LB
-        self.spreduction = 0
-        self.skills = []
-        self.hitboost = 0
-        self.spregenfl = 2
-        self.spregenbl = 2
-        self.sp = 1
-        self.totems = 0
-        self.equipmentSP = 0
-        self.buffs = {}
-        self.buffs_upd = []
-        self.debuffs = {}
+## Global Passives
+InspiringSpark = mm.passiveSkill("Inspiring Spark")
+## Personal Passives
+Resonance = mm.passiveSkill("Resonance")
+BlueSky = mm.passiveSkill("Blue Sky")
+CooperativeSpirit = mm.passiveSkill("Cooperative Spirit")
 
-    def print(self):
-        print(self.name)
+basic = mm.Skill("Basic Attack", 0,0,"enemy",2,False, 1)
+orbSPregenAoi = mm.limitedskill("Skillful Means",1,False,"self",0,False, 0,1)
+orbSPregenRuka = mm.limitedskill("Skillful Means",1,False,"self",0,False, 0,1)
+## Diva Ruka Implementation
+ruka5 = mm.Memoria("Diva Ruka", LB=1)
+ruka5s21 = mm.Skill("Luna", 7, True, "Single Ally", 0, False, 3)
+ruka5s22 = mm.Skill("Luna EX", 7, True, "Single Ally", 0, False, 3)
+ruka5ex = mm.limitedskill("Song To Shooting Stars", 14,True,"All Allies",0,False,5,4)
+ruka5.equipmentSP = 3
+ruka5.skills = [basic, ruka5s21, ruka5s22, ruka5ex,orbSPregenRuka]
+ruka5.passives = [InspiringSpark, Resonance]
 
-class attack(Skill):
-    def __init__(self, Name, Cost, target, debuffs, Hits):
-        super().__init__(Name, Cost, target, debuffs, Hits)
+## Thunder Aoi Implementation
+aoi2 = mm.Memoria("Maid Aoi", LB=1)
+aoi1ex = mm.limitedskill("Angels Wings", 10, False, "self", 0, True, 3, 4)
+aoi2ex = mm.limitedskill("Big PP Thunder Damage", 13, False,"enemy",3,False, 0, 4)
 
-class limitedskill(Skill):
-    def __init__(self, Name, Cost, Active, target, Hits, debuffs, length, Uses:int):
-        super().__init__(Name, Cost, Active, target, Hits, debuffs, length)
-        self.uselimit = Uses
+aoi2.skills = [basic,aoi1ex,aoi2ex,orbSPregenAoi]
+aoi2.passives = [InspiringSpark, CooperativeSpirit, BlueSky]
+aoi2.equipmentSP = 3
 
-class Enemy:
-    def __init__(self, Name: str, DP: int, HP: int):
-        self.name = Name
-        self.debuffs = []
-        self.dp = DP
-        self.hp = HP
-        self.skills = []
-        self.skills_pattern = []
-
-class Buff:
-    def __init__(self, name, active, length):
-        self.name = name
-        self.isActive = active
-        self.length = length
-
-class skill_atk_increase(Buff):
-    def __init__(self, name, active, length, element, value):
-        super().__init__(name, active, length)
-        self.element = element
-        self.value = value
-    
-    def print(self):
-        text = ""
-        if self.element is not None:
-            text = text + self.element + " "
-        text = text + "Skill Atk increased by " + str(self.value) + "%"
-        if self.isActive:
-            text = text + " for " + str(self.length) + " turns"
-        else:
-            text = text + f" ({self.length} uses)"
-        print(text)
-        
-
-class crit_rate_buff(Buff):
-    def __init__(self, name, active, length, element, value):
-        super().__init__(name, active, length)
-        self.element = element
-        self.value = value
-    
-    def print(self):
-        text = ""
-        if self.element is not None:
-            text = text + self.element + " "
-        text = text + "Crit Rate increased by " + str(self.value) + "%"
-        if self.isActive:
-            text = text + " for " + str(self.length) + " turns"
-        else:
-            text = text + f" ({self.length} uses)"
-        print(text)
-
-class crit_dmg_buff(Buff):
-    def __init__(self, name, active, length, element, value):
-        super().__init__(name, active, length)
-        self.element = element
-        self.value = value
-    
-    def print(self):
-        text = ""
-        if self.element is not None:
-            text = text + self.element + " "
-        text = text + "Crit DMG increased by " + str(self.value) + "%"
-        if self.isActive:
-            text = text + " for " + str(self.length) + " turns"
-        else:
-            text = text + f" ({self.length} uses)"
-        print(text)
-
-class multihitBuff(Buff):
-    def __init__(self, name, active, length, hitcount, value_per_hit):
-        super().__init__(name, active, length)
-        self.hitcount = hitcount
-        self.value_per_hit = value_per_hit
-        self.totalvalue = self.hitcount * self.value_per_hit
-
-    def __gt__(self, other):
-        return self.totalvalue >= other.totalvalue
-    def __eq__(self, other):
-        return self.totalvalue == other.totalvalue
-    
-    def print(self):
-        text = ""
-        text = text + "Multihit increased by " + str(self.hitcount) + "x"+str(self.value_per_hit)
-        if self.isActive:
-            text = text + " for " + str(self.length) + " turns"
-        else:
-            text = text + f" ({self.length} uses)"
-        print(text)
-
-class dmg_reduction_buff(Buff):
-    def __init__(self, name, active, length, value):
-        super().__init__(name, active, length)
-        self.value = value
-    
-    def print(self):
-        text = f"Incoming DMG reduced by {self.value}"
-        if self.isActive:
-            text = text + " for " + str(self.length) + " turns"
-        else:
-            text = text + f" ({self.length} uses)"
-        print(text)
-    
-class battlefield():
-    def __init__(self, allies, enemies, activeskills):
-        self.allies = allies
-        self.enemies = enemies
-        self.fieldskills = activeskills
-        self.turn = 0
+class MMcollection:
+    def __init__(self):
+        self.collection = [ruka5, aoi2]

@@ -7,6 +7,8 @@ Units to be implemented
 6. Charl - weakness implant, damage formulas
 
 Ideas:
+1. Implement Memoria choice for battle
+    - separated memoria into different file, cleared up battlesim file
 2. Implement enemies (ST for now) 
     - create target enemy, give it "basic" amount of health
 3. Implement Attacks 
@@ -29,6 +31,7 @@ Ideas:
 11. Implement memoria/unit stats (bruuuuuuuuuuuuuuuuuuuuuuuuuuuuhhhhhhhhhhhhhhhhhhhh)
 12. Implement GUI - lmao
 13. Implement passive abilities based on character?
+    - Inspiring spark and DIVA SP buffs implemented
 
 ----------------------------------------------------------------------------------------------------
 

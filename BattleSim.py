@@ -1,46 +1,50 @@
-import Memoria as mm
+import Classes as mm
 import SkillsList as slist
+import PassiveSkills as plist
+import Memoria as collection
 from collections import defaultdict
 
+## Helper Funcitons ----------------------------------
 
-basic = mm.Skill("Basic Attack", 0,0,"enemy",2,False, 1)
-orbSPregenAoi = mm.limitedskill("Skillful Means",1,False,"self",0,False, 0,1)
-orbSPregenRuka = mm.limitedskill("Skillful Means",1,False,"self",0,False, 0,1)
-## Diva Ruka Implementation
-ruka5 = mm.Memoria("Diva Ruka", LB=1)
-ruka5s21 = mm.Skill("Luna", 7, True, "Single Ally", 0, False, 3)
-ruka5s22 = mm.Skill("Luna EX", 7, True, "Single Ally", 0, False, 3)
-ruka5ex = mm.limitedskill("Song To Shooting Stars", 14,True,"All Allies",0,False,5,4)
-ruka5.equipmentSP = 3
-ruka5.skills = [basic, ruka5s21, ruka5s22, ruka5ex,orbSPregenRuka]
+def activatePassive(passive, unit, field):
+    args = tuple([unit, field])
+    skillnamesearch = str.lower(passive.name).replace(' ','_')
+    try:
+        paseffct = getattr(plist, skillnamesearch)
+        paseffct(*args)
+    except:
+        print("Passive Skill has not been implemented yet")
 
-## Thunder Aoi Implementation
-aoi2 = mm.Memoria("Maid Aoi", LB=1)
-aoi1ex = mm.limitedskill("Angels Wings", 10, False, "self", 0, True, 3, 4)
-aoi2ex = mm.limitedskill("Big PP Thunder Damage", 13, False,"enemy",3,False, 0, 4)
+def skillcost(skill, unit) -> int:
+    cost = skill.spcost - unit.spreduction
+    if cost<0:
+        cost = 0
+    return cost
 
-aoi2.skills = [basic,aoi1ex,aoi2ex,orbSPregenAoi]
-aoi2.equipmentSP = 3
+## ----------------------------------------------------
 
-## 
+## Import current Memoria collection from Memoria.py
+memoriaCollection = collection.MMcollection()
 
 print("Battle Start!\n")
 # Set allies in battle - currently 1 Line, 2 allies
-allies = [ruka5, aoi2]
-
+allies = memoriaCollection.collection
+turn = 0
+activeskills = []
+Battlefield = mm.battlefield(allies, None, activeskills, turn)
 #Check equipment for SP boosting at battle start
 for x in allies:
     x.sp += x.equipmentSP
-    if x.limitbreak > 0:
-        x.spregenfl += 1
+    
 
 #List of all active skills, ative debuffs on enemies, and their durations
 action_selection = defaultdict(dict)
 debuffs_on_enemy = {}
-activeskills = []
+
 for i in range(10): ##10 rounds of simulated moves
+    Battlefield.turn += 1
     print("-------------------------------------------------------------------\n")
-    print("Round : " + str(i+1))
+    print("Round : " + str(Battlefield.turn))
 
     #Countdown Active Skills and Buffs within said Skills
     for skill in activeskills:
@@ -55,11 +59,18 @@ for i in range(10): ##10 rounds of simulated moves
                 ally.buffs_upd.remove(buff)
     choice_made = False
     
+    ## Activate Passives HERE once buffs have done countdown before 'turn start'
+    for unit in allies:
+        for passive in unit.passives:
+            activatePassive(passive, unit, Battlefield)
+
     for unit in allies:
         copyact = action_selection[unit].copy()
         for skill in copyact:
             action_selection[unit].pop(skill)
         action_selection[unit][unit.skills[0]] = ["enemy"]
+        for key in unit.spboosts:
+            unit.sp += unit.spboosts[key]
         unit.sp = unit.sp + unit.spregenfl
         if unit.sp > 20:
             unit.sp = 20
@@ -93,7 +104,7 @@ for i in range(10): ##10 rounds of simulated moves
                         skill_uses = " : " + str(skills.uselimit) + " uses left"
                     except:
                         skill_uses = ""
-                    print(str(unit.skills.index(skills) + 1)+'. ' + skills.skillname + " - " + str(skills.spcost) + " SP" + skill_uses)
+                    print(str(unit.skills.index(skills) + 1)+'. ' + skills.skillname + " - " + str(skillcost(skills, unit)) + " SP" + skill_uses)
                 while checksp:
                     skillchoice = input("Choose which skill to use: ")
                     skillchoice = int(skillchoice)
@@ -112,7 +123,7 @@ for i in range(10): ##10 rounds of simulated moves
                                 skilllim_pass = False                                
                         except:
                             pass
-                        if (unit.sp >= skill.spcost) and (skilllim_pass == True):
+                        if (unit.sp >= (skillcost(skill, unit))) and (skilllim_pass == True):
                             checksp = False
                             copyact = action_selection[unit].copy()
                             for x in copyact:
@@ -189,5 +200,5 @@ for i in range(10): ##10 rounds of simulated moves
                 print("Skill has not been implemented yet")
             
             print("")
-            unit.sp -= skill.spcost
+            unit.sp = unit.sp - (skillcost(skill, unit))
 

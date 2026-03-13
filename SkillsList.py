@@ -1,4 +1,4 @@
-import Memoria as mm
+import Classes as mm
 
 
 def skillful_means(*args):
@@ -12,8 +12,10 @@ def song_to_shooting_stars(*args):
     for ally in allies:
         CritRate = mm.crit_rate_buff("Crit Rate Up - Songstress Blessing", True, 5, None, 100)
         CritDmg = mm.crit_dmg_buff("Crit DMG Up - Songstress Blessing", True, 5, None, 90)
+        SongBless = mm.unique_buff("Songstress' Blessing", True, 5)
         ally.buffs_upd.append(CritRate)
         ally.buffs_upd.append(CritDmg)
+        ally.buffs_upd.append(SongBless)
 
 def angels_wings(*args):
     memor = args[0]
