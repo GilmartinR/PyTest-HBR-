@@ -1,12 +1,16 @@
 Units to be implemented
-1. Ruka - 13SP - Current Move: Basic Attack - need to implement LunaEX
-2. Maid Aoi - 10SP - Current Move: Basic Attack - DONE
-3. Megumi (for field implementation, as well as passive skill)
+1. Ruka - 13SP - Current Move: Basic Attack - need to implement LunaEX - DONE
+2. Maid Aoi - 10SP - Current Move: Basic Attack - DONE -> need to deal with tokens later on
+3. Megumi (for field implementation, as well as passive skill) - DONE
 4. Tama (for single-use buff implementation)
 5. yunyun - for multihit comparison in active buffs
 6. Charl - weakness implant, damage formulas
 
 Ideas:
+
+-> Started working on buff usage, currently implemented only for active multihit buffs
+
+
 1. Implement Memoria choice for battle
     - separated memoria into different file, cleared up battlesim file
 2. Implement enemies (ST for now) 
@@ -40,18 +44,21 @@ critical - crit rate + crit dmg + elemental crit dmg
 multihit - multihit
 def decrease - def decrease + elemental def + def (perma) + elemental def (perma) + expose
 
-how to implement different types of debuffs, how to implement perma def down?
-
-class buffs
-
-subclass skill_atk_increase
-subclass critical
-subclass multihit 
-
 class debuffs
 subclass def_down
 -when calculating multiplier - run through all debuffs on enemy, 
 - will need a func to find strongest current buffs?
 - func for strongest active debuffs?
 
-subclass stat_down
+
+to-do for Friday 13th:
+- Enemy
+- debuffs
+- using buffs
+- finding 2 strongest buffs of every "type"? Differentiate between skill atk, elemental skill atk, etc
+- applying said buffs
+- frontline/backline (if time)
+
+For sorting the buffs:
+generate separate lists with buffs sorted into "subtypes" determined at initiation
+

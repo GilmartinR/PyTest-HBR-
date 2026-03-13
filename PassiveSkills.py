@@ -1,10 +1,13 @@
+import Classes as cl
+
 def inspiring_spark(*args):
     unit = args[0]
     field = args[1]
-    if unit in field.fl_allies:
-        unit.spboosts["Inspiring Spark"] = 1
-    else:
-        unit.spboosts["Inspiring Spark"] = 0
+    if unit.limitbreak > 0:
+        if unit in field.fl_allies:
+            unit.spboosts["Inspiring Spark"] = 1
+        else:
+            unit.spboosts["Inspiring Spark"] = 0
 
 def resonance(*args):
     unit = args[0]
@@ -35,9 +38,11 @@ def cooperative_spirit(*args):
                 except:
                     pass
 
-def _(*args):
+def meditation(*args):
     unit = args[0]
     field = args[1]
+    medttn = cl.unique_buff("Meditation", True, 1)
+    unit.buffs_upd.append(medttn)
 
 def _(*args):
     unit = args[0]

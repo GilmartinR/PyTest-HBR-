@@ -3,23 +3,10 @@ import SkillsList as slist
 import PassiveSkills as plist
 import Memoria as collection
 from collections import defaultdict
+import HelperFunctions as hf
 
 ## Helper Funcitons ----------------------------------
 
-def activatePassive(passive, unit, field):
-    args = tuple([unit, field])
-    skillnamesearch = str.lower(passive.name).replace(' ','_')
-    try:
-        paseffct = getattr(plist, skillnamesearch)
-        paseffct(*args)
-    except:
-        print("Passive Skill has not been implemented yet")
-
-def skillcost(skill, unit) -> int:
-    cost = skill.spcost - unit.spreduction
-    if cost<0:
-        cost = 0
-    return cost
 
 ## ----------------------------------------------------
 
@@ -30,8 +17,8 @@ print("Battle Start!\n")
 # Set allies in battle - currently 1 Line, 2 allies
 allies = memoriaCollection.collection
 turn = 0
-activeskills = []
-Battlefield = mm.battlefield(allies, None, activeskills, turn)
+field_buffs = []
+Battlefield = mm.battlefield(allies, None, field_buffs, turn)
 #Check equipment for SP boosting at battle start
 for x in allies:
     x.sp += x.equipmentSP
@@ -39,7 +26,6 @@ for x in allies:
 
 #List of all active skills, ative debuffs on enemies, and their durations
 action_selection = defaultdict(dict)
-debuffs_on_enemy = {}
 
 for i in range(10): ##10 rounds of simulated moves
     Battlefield.turn += 1
@@ -47,22 +33,26 @@ for i in range(10): ##10 rounds of simulated moves
     print("Round : " + str(Battlefield.turn))
 
     #Countdown Active Skills and Buffs within said Skills
-    for skill in activeskills:
-        skill.length -= 1
-        if skill.length == 0:
-            activeskills.remove(skill)
     for ally in allies:
         for buff in ally.buffs_upd:
             if buff.isActive:
                 buff.length -= 1
+                #print(f"reduced length of {buff.name} by 1")
+        for buff in ally.buffs_upd:
             if buff.length == 0:
                 ally.buffs_upd.remove(buff)
+    for fieldbuff in Battlefield.fieldskills:
+        if fieldbuff.isActive:
+            fieldbuff.length -= 1
+        fieldbuff.print()
+        if fieldbuff.length == 0:
+            Battlefield.fieldskills.remove(fieldbuff)
     choice_made = False
     
     ## Activate Passives HERE once buffs have done countdown before 'turn start'
     for unit in allies:
         for passive in unit.passives:
-            activatePassive(passive, unit, Battlefield)
+            hf.activatePassive(passive, unit, Battlefield)
 
     for unit in allies:
         copyact = action_selection[unit].copy()
@@ -104,7 +94,7 @@ for i in range(10): ##10 rounds of simulated moves
                         skill_uses = " : " + str(skills.uselimit) + " uses left"
                     except:
                         skill_uses = ""
-                    print(str(unit.skills.index(skills) + 1)+'. ' + skills.skillname + " - " + str(skillcost(skills, unit)) + " SP" + skill_uses)
+                    print(str(unit.skills.index(skills) + 1)+'. ' + skills.skillname + " - " + str(hf.skillcost(skills, unit)) + " SP" + skill_uses)
                 while checksp:
                     skillchoice = input("Choose which skill to use: ")
                     skillchoice = int(skillchoice)
@@ -123,28 +113,34 @@ for i in range(10): ##10 rounds of simulated moves
                                 skilllim_pass = False                                
                         except:
                             pass
-                        if (unit.sp >= (skillcost(skill, unit))) and (skilllim_pass == True):
+                        if (unit.sp >= (hf.skillcost(skill, unit))) and (skilllim_pass == True):
                             checksp = False
                             copyact = action_selection[unit].copy()
                             for x in copyact:
                                 action_selection[unit].pop(x)
                             #add target selection
-                            match skill.target:
-                                case "self":
-                                    action_selection[unit][skill] = unit
-                                case "All Allies":
-                                    action_selection[unit][skill] = allies
-                                case "Single Ally":
-                                    print("Please choose a target for the skill")
-                                    for x in allies:
-                                        print(str(allies.index(x)) + ". " + x.name)
-                                    targetchoice = input("Write number of selected character: ")
-                                    targetchoice = int(targetchoice)
-                                    target_ally = allies[targetchoice]
-                                    action_selection[unit][skill] = target_ally
-                                    print("Target is - " + target_ally.name)
-                                case "enemy":
-                                    action_selection[unit][skill] = "enemy"
+                            action_selection[unit][skill] = []
+                            for target in skill.target:
+                                #print(target)
+                                match target:
+                                    case 'self':
+                                        action_selection[unit][skill].append(unit)
+                                    case "All Allies":
+                                        action_selection[unit][skill].append(allies)
+                                    case 'Single Ally':
+                                        print("Please choose a target for the skill")
+                                        for x in allies:
+                                            print(str(allies.index(x)+1) + ". " + x.name)
+                                        targetchoice = input("Write number of selected character: ")
+                                        targetchoice = int(targetchoice)-1
+                                        target_ally = allies[targetchoice]
+                                        action_selection[unit][skill].append(target_ally)
+                                        print("Target is - " + target_ally.name)
+                                    case "field":
+                                        action_selection[unit][skill].append(Battlefield)
+                                    case "enemy":
+                                        action_selection[unit][skill].append("enemy")
+                            
                             valid_input = True
                         else:
                             print("Not enough SP or uses remaining: use a different skill")
@@ -178,17 +174,19 @@ for i in range(10): ##10 rounds of simulated moves
                     skill.uselimit -=1                               
             except:
                 pass
-            match skill.target:
-                case "self":
-                    args.append(unit)
-                case "All Allies":
-                    args.append(allies)
-                case "Single Ally":
-                    args.append(action_selection[unit][skill])
-                case "Field":
-                    args.append[activeskills]
-            if skill.debuffs:
-                args.append(debuffs_on_enemy)
+            for target in skill.target:
+                match target:
+                    case "self":
+                        args.append(unit)
+                    case "All Allies":
+                        args.append(allies)
+                    case "Single Ally":
+                        args.append(action_selection[unit][skill][skill.target.index(target)])
+                    case "field":
+                        args.append(Battlefield)
+                    case "enemy":
+                        args.append(action_selection[unit][skill][skill.target.index(target)])
+                        hf.use_atk_buffs(unit, skill, Battlefield)
             #print(args)
             args = tuple(args)
             skillnamesearch = str.lower(skill.skillname).replace(' ','_')
@@ -200,5 +198,5 @@ for i in range(10): ##10 rounds of simulated moves
                 print("Skill has not been implemented yet")
             
             print("")
-            unit.sp = unit.sp - (skillcost(skill, unit))
+            unit.sp = unit.sp - (hf.skillcost(skill, unit))
 
